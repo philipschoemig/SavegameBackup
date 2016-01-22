@@ -20,6 +20,7 @@ class Processor(object):
 
     def run(self, args):
         print "== List backups =="
+        self.backup_manager.load_config()
         self.args = args
 
         backups = self.backup_manager.list()

@@ -3,10 +3,17 @@ Created on 07.01.2016
 
 @author: Philip Schoemig
 '''
+from datetime import datetime
 import os
 import re
+import shutil
 import tarfile
-import time
+
+import utils.ui
+
+
+TIMESTAMP_FORMAT = '%Y%m%d_%H%M%S'
+TIMESTAMP_REGEXP = r'\d{4}\d{2}\d{2}_\d{2}\d{2}\d{2}'
 
 
 class Backup(object):
@@ -18,7 +25,8 @@ class Backup(object):
         self.path = path
 
     def get_time(self):
-        return time.localtime(os.path.getmtime(self.path))
+        match = re.search(TIMESTAMP_REGEXP, self.name)
+        return datetime.strptime(match.group(0), TIMESTAMP_FORMAT)
 
     def get_size(self):
         return os.path.getsize(self.path)
@@ -31,8 +39,15 @@ class BackupManager(object):
     configurator = None
     backups = None
 
+    # Configuration options
+    max_backups = None
+
     def __init__(self, configurator):
         self.configurator = configurator
+
+    def load_config(self):
+        self.max_backups = self.configurator.config.getint(
+            'backups', 'max_count')
 
     def list(self, profile=None):
         backups = self.backups
@@ -40,7 +55,7 @@ class BackupManager(object):
             backups = []
             for entry in os.listdir(self.configurator.backup_path):
                 path = os.path.join(self.configurator.backup_path, entry)
-                if tarfile.is_tarfile(path):
+                if os.path.isfile(path) and tarfile.is_tarfile(path):
                     backups.append(Backup(entry, path))
             backups.sort(key=lambda backup: backup.name)
             self.backups = backups
@@ -50,12 +65,12 @@ class BackupManager(object):
         return backups
 
     def create(self, profile):
-        timestamp = time.strftime('%Y%m%d_%H%M%S', profile.get_time())
+        timestamp = profile.get_time().strftime(TIMESTAMP_FORMAT)
         filename = '{0}_{1}.tar.bz2'.format(profile.name, timestamp)
         path = os.path.join(self.configurator.backup_path, filename)
+        if os.path.exists(path):
+            raise IOError('Backup file already exists: ' + filename)
         if not self.configurator.dry_run:
-            if os.path.exists(path):
-                raise IOError('Backup file already exists: ' + filename)
             cwd = os.getcwd()
             try:
                 os.chdir(os.path.dirname(profile.path))
@@ -66,10 +81,23 @@ class BackupManager(object):
         self.backups = None  # Reset stored backup list
         return filename
 
+    def restore(self, profile, backup):
+        target_path = os.path.dirname(profile.path)
+        if utils.ui.UserInteraction.confirm(
+           'Overwrite profile \'{0}\'?'.format(profile.path)):
+            if not self.configurator.dry_run:
+                cwd = os.getcwd()
+                try:
+                    os.chdir(target_path)
+                    shutil.rmtree(profile.name)
+                    with tarfile.open(backup.path, 'r:bz2') as tar:
+                        tar.extractall()
+                finally:
+                    os.chdir(cwd)
+
     def cleanup(self, profile):
-        max_backups = self.configurator.config.getint('backups', 'max_count')
         backups = self.list(profile)
-        count = len(backups) - max_backups
+        count = len(backups) - self.max_backups
 
         old_backups = []
         if count > 0:

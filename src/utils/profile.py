@@ -3,8 +3,8 @@ Created on 07.01.2016
 
 @author: Philip Schoemig
 '''
+from datetime import datetime
 import os
-import time
 
 
 class Profile(object):
@@ -19,7 +19,7 @@ class Profile(object):
         mtimes = [os.path.getmtime(os.path.join(self.path, entry))
                   for entry in os.listdir(self.path)]
         mtimes.sort(reverse=True)
-        return time.localtime(mtimes[0])
+        return datetime.fromtimestamp(mtimes[0])
 
     def __repr__(self):
         return repr((self.name, self.path))
@@ -29,22 +29,35 @@ class ProfileManager(object):
     configurator = None
     profiles = None
 
+    # Configuration options
+    savegame_path = None
+    excludes = None
+    includes = None
+
     def __init__(self, configurator):
         self.configurator = configurator
+
+    def load_config(self):
+        self.savegame_path = self.configurator.config.get('game', 'path')
+
+        if self.configurator.config.has_option('profiles', 'excludes'):
+            option = self.configurator.config.get('profiles', 'excludes')
+            self.excludes = [exclude.strip() for exclude in option.split(',')]
+
+        if self.configurator.config.has_option('profiles', 'includes'):
+            option = self.configurator.config.get('profiles', 'includes')
+            self.includes = [include.strip() for include in option.split(',')]
 
     def list(self):
         profiles = self.profiles
         if not profiles:
-            savegame_path = self.configurator.config.get('game', 'path')
-            excludes = []
-            if self.configurator.config.has_option('profiles', 'excludes'):
-                option = self.configurator.config.get('profiles', 'excludes')
-                excludes = [exclude.strip() for exclude in option.split(',')]
-
             profiles = []
-            for entry in os.listdir(savegame_path):
-                path = os.path.join(savegame_path, entry)
-                if os.path.isdir(path) and entry not in excludes:
+            for entry in os.listdir(self.savegame_path):
+                path = os.path.join(self.savegame_path, entry)
+                include = \
+                    (self.excludes is None or entry not in self.excludes) and \
+                    (self.includes is None or entry in self.includes)
+                if os.path.isdir(path) and include:
                     profiles.append(Profile(entry, path))
             profiles.sort(key=lambda profile: profile.name)
             self.profiles = profiles
