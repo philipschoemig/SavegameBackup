@@ -3,8 +3,6 @@ Created on 07.01.2016
 
 @author: Philip Schoemig
 '''
-import time
-
 import hurry.filesize
 import utils.backup
 
@@ -19,19 +17,19 @@ class Processor(object):
         self.backup_manager = utils.backup.BackupManager(configurator)
 
     def run(self, args):
-        print "== List backups =="
+        print("== List backups ==")
         self.backup_manager.load_config()
         self.args = args
 
         backups = self.backup_manager.list()
         for backup in backups:
-            print self.print_backup_info(backup)
+            print(self.print_backup_info(backup))
         if not backups:
-            print "No backups created yet"
+            print("No backups created yet")
 
     def print_backup_info(self, backup):
         size = hurry.filesize.size(backup.get_size())
-        timestamp = time.asctime(backup.get_time())
+        timestamp = backup.get_time().ctime()
         return "- {0} - Size: {1}, Time: {2}".format(
             backup.name, size, timestamp)
 

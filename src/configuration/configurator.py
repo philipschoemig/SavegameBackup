@@ -5,7 +5,7 @@ Created on 07.01.2016
 '''
 
 import argparse
-import ConfigParser
+import configparser
 import os
 import sys
 
@@ -26,7 +26,7 @@ class Configurator(object):
             description='Manages backups of savegames')
         self.subparsers = self.parser.add_subparsers(
             help='Available sub-commands')
-        self.config = ConfigParser.SafeConfigParser()
+        self.config = configparser.SafeConfigParser()
         self.root_path = os.path.join(os.path.expanduser('~'), '.savegame')
 
     def run(self):

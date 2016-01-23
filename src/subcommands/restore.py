@@ -19,23 +19,23 @@ class Processor(object):
         self.profile_manager = utils.profile.ProfileManager(configurator)
 
     def run(self, args):
-        print "== Restore backup =="
+        print("== Restore backup ==")
         self.backup_manager.load_config()
         self.profile_manager.load_config()
         self.args = args
 
         profile = self.profile_selection()
-        print  # Newline
-        print "Profile: " + profile.name
+        print()  # Newline
+        print("Profile: " + profile.name)
 
         backup = self.backup_selection(profile)
-        print  # Newline
-        print "Backup: " + backup.name
+        print()  # Newline
+        print("Backup: " + backup.name)
 
-        print "Restoring backup ..."
+        print("Restoring backup ...")
         self.backup_manager.restore(profile, backup)
 
-        print "Done"
+        print("Done")
 
     def profile_selection(self):
         profiles = self.profile_manager.list()

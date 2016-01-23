@@ -20,7 +20,7 @@ class Processor(object):
         self.profile_manager = utils.profile.ProfileManager(configurator)
 
     def run(self, args):
-        print "== Create backup =="
+        print("== Create backup ==")
         self.backup_manager.load_config()
         self.profile_manager.load_config()
         self.args = args
@@ -33,9 +33,9 @@ class Processor(object):
 
         if len(profiles) > 0:
             self.backup_profiles(profiles)
-            print "Done"
+            print("Done")
         else:
-            print "No profiles selected"
+            print("No profiles selected")
 
     def manual_profile_selection(self):
         profiles = self.profile_manager.list()
@@ -58,16 +58,16 @@ class Processor(object):
 
     def backup_profiles(self, profiles):
         for profile in profiles:
-            print  # Newline
-            print "Profile: " + profile.name
-            print "Creating backup ..."
+            print()  # Newline
+            print("Profile: " + profile.name)
+            print("Creating backup ...")
             filename = self.backup_manager.create(profile)
-            print "- " + filename
+            print("- " + filename)
 
-            print "Cleaning up old backups ..."
+            print("Cleaning up old backups ...")
             old_backups = self.backup_manager.cleanup(profile)
             for backup in old_backups:
-                print "- " + backup.name
+                print("- " + backup.name)
 
     def register_cl_parser(self, main_parser):
         parser = main_parser.add_parser(

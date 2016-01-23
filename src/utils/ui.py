@@ -13,11 +13,11 @@ class UserInteraction(object):
             message, ','.join(options), default)
         char = None
         while char not in options:
-            char = raw_input(prompt).strip().lower()
+            char = input(prompt).strip().lower()
             if default and not char:
                 char = default
             elif char not in options:
-                print 'Please enter a valid option.'
+                print('Please enter a valid option.')
         return char
 
     @staticmethod
@@ -40,6 +40,6 @@ class UserInteraction(object):
         options = []
         for index, item in enumerate(iterable):
             options.append(str(index))
-            print "{0}. {1}".format(index, item)
+            print("{0}. {1}".format(index, item))
         char = UserInteraction.choice(message, options)
         return int(char)
