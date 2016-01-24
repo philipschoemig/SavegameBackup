@@ -3,6 +3,8 @@ Created on 07.01.2016
 
 @author: Philip Schoemig
 '''
+import datetime
+
 import utils.backup
 import utils.profile
 import utils.ui
@@ -51,7 +53,10 @@ class Processor(object):
         for profile in profiles:
             profile_time = profile.get_time().replace(microsecond=0)
             backups = self.backup_manager.list(profile)
-            backup_time = backups[-1].get_time()
+            if len(backups) > 0:
+                backup_time = backups[-1].get_time()
+            else:
+                backup_time = profile_time - datetime.timedelta(1)
             if profile_time > backup_time:
                 selection.append(profile)
         return selection

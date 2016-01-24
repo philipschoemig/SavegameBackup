@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 '''
 SavegameBackup - Manages backups of savegame files
-Version 1.3
+Version 1.3.1
 '''
 import sys
 
