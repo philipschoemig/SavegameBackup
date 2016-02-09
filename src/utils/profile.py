@@ -6,6 +6,8 @@ Created on 07.01.2016
 from datetime import datetime
 import os
 
+from singleton.singleton import Singleton
+
 
 class Profile(object):
     name = None
@@ -34,10 +36,19 @@ class ProfileManager(object):
     excludes = None
     includes = None
 
-    def __init__(self, configurator):
+    # Cache variables
+    profiles = None
+
+    def __new__(cls, *p, **k):
+        # Ensure the instance is only created once (Singleton)
+        if '_the_instance' not in cls.__dict__:
+            cls._the_instance = object.__new__(cls)
+        return cls._the_instance
+
+    def initialize(self, configurator):
         self.configurator = configurator
 
-    def load_config(self):
+        # Read configuration options
         self.savegame_path = self.configurator.config.get('game', 'path')
 
         if self.configurator.config.has_option('profiles', 'excludes'):

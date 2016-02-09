@@ -9,17 +9,18 @@ import utils.backup
 
 class Processor(object):
     configurator = None
-    backup_manager = None
     args = None
+
+    backup_manager = None
 
     def __init__(self, configurator):
         self.configurator = configurator
-        self.backup_manager = utils.backup.BackupManager(configurator)
 
     def run(self, args):
         print("== List backups ==")
-        self.backup_manager.load_config()
         self.args = args
+
+        self.backup_manager = utils.backup.BackupManager()
 
         backups = self.backup_manager.list()
         for backup in backups:

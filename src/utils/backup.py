@@ -9,7 +9,9 @@ import re
 import shutil
 import tarfile
 
-import utils.ui
+from singleton.singleton import Singleton
+
+import utils.userinteraction
 
 
 TIMESTAMP_FORMAT = '%Y%m%d_%H%M%S'
@@ -37,15 +39,25 @@ class Backup(object):
 
 class BackupManager(object):
     configurator = None
-    backups = None
+    input_helper = None
 
     # Configuration options
     max_backups = None
 
-    def __init__(self, configurator):
-        self.configurator = configurator
+    # Cache variables
+    backups = None
 
-    def load_config(self):
+    def __new__(cls, *p, **k):
+        # Ensure the instance is only created once (Singleton)
+        if '_the_instance' not in cls.__dict__:
+            cls._the_instance = object.__new__(cls)
+        return cls._the_instance
+
+    def initialize(self, configurator):
+        self.configurator = configurator
+        self.input_helper = utils.userinteraction.InputHelper()
+
+        # Read configuration options
         self.max_backups = self.configurator.config.getint(
             'backups', 'max_count')
 
@@ -83,7 +95,7 @@ class BackupManager(object):
 
     def restore(self, profile, backup):
         target_path = os.path.dirname(profile.path)
-        if utils.ui.UserInteraction.confirm(
+        if self.input_helper.confirm(
            'Overwrite profile \'{0}\'?'.format(profile.path)):
             if not self.configurator.dry_run:
                 cwd = os.getcwd()

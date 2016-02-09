@@ -25,4 +25,3 @@ if __name__ == "__main__":
     # Execute pytest on the test directory
     args.append(testdir)
     sys.exit(pytest.main(args))
-
