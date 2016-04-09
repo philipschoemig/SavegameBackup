@@ -18,9 +18,19 @@ class InputHelper(object):
     def choice(self, message, options, default=None):
         if len(options) == 0:
             raise ValueError('Options may not be empty')
+        if default and default not in options:
+            raise ValueError('Default must be included in options')
 
-        prompt = '{0} [{1}] <{2}>: '.format(
-            message, '|'.join(options), default)
+        options_list = [opt.lower() for opt in options]
+        if default:
+            default_index = options_list.index(default)
+            if default.isalpha():
+                options_list[default_index] = default.upper()
+            else:
+                options_list[default_index] = '{0}*'.format(default)
+        options_string = '/'.join(options_list)
+
+        prompt = '{0} [{1}] '.format(message, options_string)
         char = None
         while char not in options:
             char = input(prompt).strip().lower()

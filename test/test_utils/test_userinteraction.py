@@ -24,7 +24,7 @@ class TestUserInteraction(unittest.TestCase):
     def test_choice(self, input_mock, print_mock):
         expected = 'y'
         expected_input_calls = [
-            call('Test [y|n] <y>: '),
+            call('Test [Y/n] '),
         ]
         expected_print_calls = [
         ]
@@ -42,7 +42,7 @@ class TestUserInteraction(unittest.TestCase):
     def test_choice_with_default_input(self, input_mock, print_mock):
         expected = 'y'
         expected_input_calls = [
-            call('Test [y|n] <y>: '),
+            call('Test [Y/n] '),
         ]
         expected_print_calls = [
         ]
@@ -60,8 +60,8 @@ class TestUserInteraction(unittest.TestCase):
     def test_choice_with_default_missing(self, input_mock, print_mock):
         expected = 'y'
         expected_input_calls = [
-            call('Test [y|n] <None>: '),
-            call('Test [y|n] <None>: '),
+            call('Test [y/n] '),
+            call('Test [y/n] '),
         ]
         expected_print_calls = [
             call('Please enter a valid option.'),
@@ -83,12 +83,19 @@ class TestUserInteraction(unittest.TestCase):
 
     @patch.object(utils.userinteraction, 'print', create=True)
     @patch.object(utils.userinteraction, 'input', create=True)
+    def test_choice_with_invalid_default(self, input_mock, print_mock):
+        with self.assertRaisesRegex(ValueError,
+                                    r'Default must be included in options'):
+            self.input_helper.choice('Test', ['y', 'n'], 'z')
+
+    @patch.object(utils.userinteraction, 'print', create=True)
+    @patch.object(utils.userinteraction, 'input', create=True)
     def test_choice_with_invalid_input(self, input_mock, print_mock):
         expected = 'y'
         expected_input_calls = [
-            call('Test [y|n] <y>: '),
-            call('Test [y|n] <y>: '),
-            call('Test [y|n] <y>: '),
+            call('Test [Y/n] '),
+            call('Test [Y/n] '),
+            call('Test [Y/n] '),
         ]
         expected_print_calls = [
             call('Please enter a valid option.'),
@@ -108,7 +115,7 @@ class TestUserInteraction(unittest.TestCase):
     def test_choice_with_uppercase_input(self, input_mock, print_mock):
         expected = 'y'
         expected_input_calls = [
-            call('Test [y|n] <y>: '),
+            call('Test [Y/n] '),
         ]
         expected_print_calls = [
         ]
@@ -126,7 +133,7 @@ class TestUserInteraction(unittest.TestCase):
     def test_choice_with_whitespace_input(self, input_mock, print_mock):
         expected = 'y'
         expected_input_calls = [
-            call('Test [y|n] <y>: '),
+            call('Test [Y/n] '),
         ]
         expected_print_calls = [
         ]
@@ -142,7 +149,7 @@ class TestUserInteraction(unittest.TestCase):
     @patch.object(utils.userinteraction, 'print', create=True)
     @patch.object(utils.userinteraction, 'input', create=True)
     def test_choice_with_none_option(self, input_mock, print_mock):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             self.input_helper.choice(
                 'Test', ['y', 'n', None], 'y')
 
@@ -151,7 +158,7 @@ class TestUserInteraction(unittest.TestCase):
     def test_confirm(self, input_mock, print_mock):
         expected = True
         expected_input_calls = [
-            call('Test [y|n] <n>: '),
+            call('Test [y/N] '),
         ]
         expected_print_calls = [
         ]
@@ -168,7 +175,7 @@ class TestUserInteraction(unittest.TestCase):
     def test_confirm_with_default_input(self, input_mock, print_mock):
         expected = True
         expected_input_calls = [
-            call('Test [y|n] <y>: '),
+            call('Test [Y/n] '),
         ]
         expected_print_calls = [
         ]
@@ -185,7 +192,7 @@ class TestUserInteraction(unittest.TestCase):
     def test_select(self, input_mock, print_mock):
         expected = 0
         expected_input_calls = [
-            call('Test [0|1|2] <None>: '),
+            call('Test [0/1/2] '),
         ]
         expected_print_calls = [
             call('0. zero'),
