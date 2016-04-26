@@ -60,10 +60,11 @@ class InputHelper(object):
         char = self.choice(message, options)
         return int(char)
 
-    def input(self, message, completion_options=None):
+    def input(self, message, completion_options=None, show_hint=True):
         hint = ''
         if completion_options:
-            hint = ' (TAB for completion)'
+            if show_hint:
+                hint = ' (TAB for completion)'
             # Register our completer function
             readline.set_completer(
                 SimpleCompleter(completion_options).complete)

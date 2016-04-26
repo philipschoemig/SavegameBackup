@@ -31,7 +31,8 @@ class Configurator(object):
             prog=sys.argv[0],
             description='Manages backups of savegames')
         self.subparsers = self.parser.add_subparsers(
-            help='Available sub-commands')
+            help='Available sub-commands',
+            dest='subcommand')
         self.config = configparser.SafeConfigParser()
         self.root_path = os.path.join(os.path.expanduser('~'), '.savegame')
         self.log_file = os.path.join(self.root_path, 'SavegameBackup.log')
@@ -68,7 +69,19 @@ class Configurator(object):
         profile_manager = utils.profile.ProfileManager()
         profile_manager.initialize(self)
 
-        args.func(args)
+        if args.subcommand:
+            args.func(args)
+        else:
+            options = [choice for choice in self.subparsers.choices]
+            cmd = '-h'
+            while cmd:
+                try:
+                    cmd_args = self.parser.parse_args(cmd.split())
+                    if cmd_args.subcommand:
+                        cmd_args.func(cmd_args)
+                except SystemExit:
+                    pass
+                cmd = input_helper.input('$', options, False)
 
     def get_config_file(self, args, input_helper):
         if args.config_file:
