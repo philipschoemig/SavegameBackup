@@ -4,7 +4,11 @@ Created on 22.01.2016
 @author: Philip Schoemig
 '''
 import logging
-import readline
+
+try:
+    import readline
+except ImportError:
+    import pyreadline as readline
 
 
 class InputHelper(object):

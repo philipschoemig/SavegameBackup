@@ -1,5 +1,5 @@
 '''
-Created on 22.01.2016
+Created on 22.09.2016
 
 @author: Philip Schoemig
 '''
@@ -18,7 +18,7 @@ class Processor(object):
         self.configurator = configurator
 
     def run(self, args):
-        print("== Restore backup ==")
+        print("== Delete backup ==")
         self.args = args
 
         self.backup_manager = utils.backup.BackupManager()
@@ -34,13 +34,13 @@ class Processor(object):
                 print()  # Newline
                 print("Backup: " + backup.name)
 
-                print("Restoring backup ...")
-                self.backup_manager.restore(profile, backup)
+                print("Deleting backup ...")
+                self.backup_manager.delete(profile, backup)
                 print("Done")
 
     def register_cl_parser(self, main_parser):
         parser = main_parser.add_parser(
-            'restore', help="Restore a savegame backup")
+            'restore', help="Delete a savegame backup")
 
         parser.set_defaults(func=self.run)
         return parser

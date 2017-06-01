@@ -7,14 +7,12 @@ import datetime
 
 import utils.backup
 import utils.profile
-import utils.userinteraction
 
 
 class Processor(object):
     configurator = None
     args = None
 
-    input_helper = None
     backup_manager = None
     profile_manager = None
 
@@ -25,7 +23,6 @@ class Processor(object):
         print("== Create backup ==")
         self.args = args
 
-        self.input_helper = utils.userinteraction.InputHelper()
         self.backup_manager = utils.backup.BackupManager()
         self.profile_manager = utils.profile.ProfileManager()
 
@@ -42,11 +39,8 @@ class Processor(object):
             print("No profiles selected")
 
     def manual_profile_selection(self):
-        profiles = self.profile_manager.list()
-        index = self.input_helper.select(
-            "Please select the profile to backup",
-            [profile.name for profile in profiles])
-        selection = [profiles[index]]
+        profile = self.profile_manager.select()
+        selection = [profile]
         return selection
 
     def automatic_profile_selection(self):

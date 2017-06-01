@@ -8,6 +8,8 @@ import os
 
 from singleton.singleton import Singleton
 
+import utils.userinteraction
+
 
 class Profile(object):
     name = None
@@ -29,7 +31,7 @@ class Profile(object):
 
 class ProfileManager(object):
     configurator = None
-    profiles = None
+    input_helper = None
 
     # Configuration options
     savegame_path = None
@@ -47,6 +49,7 @@ class ProfileManager(object):
 
     def initialize(self, configurator):
         self.configurator = configurator
+        self.input_helper = utils.userinteraction.InputHelper()
 
         # Read configuration options
         self.savegame_path = self.configurator.config.get('game', 'path')
@@ -73,3 +76,15 @@ class ProfileManager(object):
             profiles.sort(key=lambda profile: profile.name)
             self.profiles = profiles
         return profiles
+
+    def select(self):
+        profiles = self.list()
+        profile = None
+        if len(profiles) > 0:
+            index = self.input_helper.select(
+                "Please select the profile",
+                [profile.name for profile in profiles])
+            profile = profiles[index]
+        else:
+            print("No profile found")
+        return profile

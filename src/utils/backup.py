@@ -61,20 +61,18 @@ class BackupManager(object):
         self.max_backups = self.configurator.config.getint(
             'backups', 'max_count')
 
-    def list(self, profile=None):
-        backups = self.backups
-        if not backups:
-            backups = []
-            for entry in os.listdir(self.configurator.backup_path):
-                path = os.path.join(self.configurator.backup_path, entry)
-                if os.path.isfile(path) and tarfile.is_tarfile(path):
-                    backups.append(Backup(entry, path))
-            backups.sort(key=lambda backup: backup.name)
-            self.backups = backups
-        if profile:
-            backups = [backup for backup in backups if re.match(
-                r'{0}_'.format(profile.name), backup.name)]
-        return backups
+    def cleanup(self, profile):
+        backups = self.list(profile)
+        count = len(backups) - self.max_backups
+
+        old_backups = []
+        if count > 0:
+            old_backups = backups[0:count]
+            for backup in old_backups:
+                if not self.configurator.dry_run:
+                    os.remove(backup.path)
+        self.backups = None  # Reset stored backup list
+        return old_backups
 
     def create(self, profile):
         timestamp = profile.get_time().strftime(TIMESTAMP_FORMAT)
@@ -93,6 +91,27 @@ class BackupManager(object):
         self.backups = None  # Reset stored backup list
         return filename
 
+    def delete(self, profile, backup):
+        if self.input_helper.confirm(
+           'Delete backup \'{0}\'?'.format(backup.path)):
+            if not self.configurator.dry_run:
+                os.remove(backup.path)
+
+    def list(self, profile=None):
+        backups = self.backups
+        if not backups:
+            backups = []
+            for entry in os.listdir(self.configurator.backup_path):
+                path = os.path.join(self.configurator.backup_path, entry)
+                if os.path.isfile(path) and tarfile.is_tarfile(path):
+                    backups.append(Backup(entry, path))
+            backups.sort(key=lambda backup: backup.name)
+            self.backups = backups
+        if profile:
+            backups = [backup for backup in backups if re.match(
+                r'{0}_'.format(profile.name), backup.name)]
+        return backups
+
     def restore(self, profile, backup):
         target_path = os.path.dirname(profile.path)
         if self.input_helper.confirm(
@@ -107,15 +126,14 @@ class BackupManager(object):
                 finally:
                     os.chdir(cwd)
 
-    def cleanup(self, profile):
+    def select(self, profile):
         backups = self.list(profile)
-        count = len(backups) - self.max_backups
-
-        old_backups = []
-        if count > 0:
-            old_backups = backups[0:count]
-            for backup in old_backups:
-                if not self.configurator.dry_run:
-                    os.remove(backup.path)
-        self.backups = None  # Reset stored backup list
-        return old_backups
+        backup = None
+        if len(backups) > 0:
+            index = self.input_helper.select(
+                "Please select the backup",
+                [backup.name for backup in backups])
+            backup = backups[index]
+        else:
+            print("No backup found")
+        return backup

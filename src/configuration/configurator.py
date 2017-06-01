@@ -33,7 +33,7 @@ class Configurator(object):
         self.subparsers = self.parser.add_subparsers(
             help='Available sub-commands',
             dest='subcommand')
-        self.config = configparser.SafeConfigParser()
+        self.config = configparser.SafeConfigParser(os.environ)
         self.root_path = os.path.join(os.path.expanduser('~'), '.savegame')
         self.log_file = os.path.join(self.root_path, 'SavegameBackup.log')
 
