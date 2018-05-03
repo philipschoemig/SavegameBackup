@@ -20,13 +20,13 @@ virtualenv .venv
 ```
 - Activate the virtual environment
   - Linux:
-```
-source .venv/bin/activate
-```
+  ```
+  source .venv/bin/activate
+  ```
   - Windows:
-```
-.venv\Scripts\activate
-```
+  ```
+  .venv\Scripts\activate
+  ```
 - Install the project requirements with pip:
 ```
 pip install -r requirements.txt
