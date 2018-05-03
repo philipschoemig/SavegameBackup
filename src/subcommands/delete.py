@@ -24,7 +24,7 @@ class Processor(object):
         self.backup_manager = utils.backup.BackupManager()
         self.profile_manager = utils.profile.ProfileManager()
 
-        profile = self.profile_manager.select()
+        profile = self.profile_manager.select(True)
         if profile:
             print()  # Newline
             print("Profile: " + profile.name)
@@ -40,7 +40,7 @@ class Processor(object):
 
     def register_cl_parser(self, main_parser):
         parser = main_parser.add_parser(
-            'restore', help="Delete a savegame backup")
+            'delete', help="Delete a savegame backup")
 
         parser.set_defaults(func=self.run)
         return parser

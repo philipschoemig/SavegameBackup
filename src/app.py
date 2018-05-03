@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 '''
 SavegameBackup - Manages backups of savegame files
-Version 1.6
+Version 1.7
 '''
 import sys
 
 import configuration.configurator
 import subcommands.create
+import subcommands.delete
 import subcommands.list
 import subcommands.restore
 
@@ -18,6 +19,9 @@ def main():
     # register subcommands
     subcommand_create = subcommands.create.Processor(configurator)
     configurator.register_subcommand(subcommand_create)
+
+    subcommand_delete = subcommands.delete.Processor(configurator)
+    configurator.register_subcommand(subcommand_delete)
 
     subcommand_list = subcommands.list.Processor(configurator)
     configurator.register_subcommand(subcommand_list)

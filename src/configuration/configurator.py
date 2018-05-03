@@ -19,12 +19,14 @@ import utils.userinteraction
 class Configurator(object):
     parser = None
     subparsers = None
+    settings = None
     config = None
     root_path = None
 
-    dry_run = False
-
     backup_path = None
+    config_file = None
+
+    dry_run = False
 
     def __init__(self):
         self.parser = argparse.ArgumentParser(
@@ -33,8 +35,10 @@ class Configurator(object):
         self.subparsers = self.parser.add_subparsers(
             help='Available sub-commands',
             dest='subcommand')
-        self.config = configparser.SafeConfigParser(os.environ)
+        self.settings = configparser.SafeConfigParser()
+        self.config = configparser.SafeConfigParser()
         self.root_path = os.path.join(os.path.expanduser('~'), '.savegame')
+        self.settings_file = os.path.join(self.root_path, 'SavegameBackup.settings')
         self.log_file = os.path.join(self.root_path, 'SavegameBackup.log')
 
     def run(self):
@@ -51,9 +55,12 @@ class Configurator(object):
         # Initialize input helper
         input_helper = utils.userinteraction.InputHelper()
 
+        # Parse settings file
+        self.settings.read(self.settings_file)
+
         # Parse configuration file
-        config_file = self.get_config_file(args, input_helper)
-        self.config.read(os.path.join(self.root_path, config_file))
+        self.config_file = self.get_config_file(args, input_helper)
+        self.config.read(self.config_file)
 
         # Create backup path in case it doesn't exist
         self.backup_path = os.path.join(
@@ -89,8 +96,16 @@ class Configurator(object):
         else:
             path = pathlib.Path(self.root_path)
             options = [entry.name for entry in path.glob('*.cfg')]
-            return input_helper.input(
+            filename = input_helper.input(
                 'Enter the configuration file name', options)
+            if filename:
+                return os.path.join(self.root_path, filename)
+            return None
+
+
+    def save_config_file(self):
+        with open(self.config_file, 'w') as file:
+            self.config.write(file)
 
     def init_main_cl_parser(self):
         # define global options here

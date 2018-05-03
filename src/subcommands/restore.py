@@ -24,7 +24,7 @@ class Processor(object):
         self.backup_manager = utils.backup.BackupManager()
         self.profile_manager = utils.profile.ProfileManager()
 
-        profile = self.profile_manager.select()
+        profile = self.profile_manager.select(True)
         if profile:
             print()  # Newline
             print("Profile: " + profile.name)

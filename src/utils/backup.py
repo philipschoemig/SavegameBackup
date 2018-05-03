@@ -14,8 +14,9 @@ from singleton.singleton import Singleton
 import utils.userinteraction
 
 
+FILENAME_EXTENSION = '.tar.bz2'
 TIMESTAMP_FORMAT = '%Y%m%d_%H%M%S'
-TIMESTAMP_REGEXP = r'\d{4}\d{2}\d{2}_\d{2}\d{2}\d{2}'
+TIMESTAMP_REGEXP = r'\d{4}\d{2}\d{2}_\d{2}\d{2}\d{2}(?=' + FILENAME_EXTENSION + r')'
 
 
 class Backup(object):
@@ -76,16 +77,17 @@ class BackupManager(object):
 
     def create(self, profile):
         timestamp = profile.get_time().strftime(TIMESTAMP_FORMAT)
-        filename = '{0}_{1}.tar.bz2'.format(profile.name, timestamp)
+        filename = '{0}_{1}{2}'.format(profile.name, timestamp, FILENAME_EXTENSION)
         path = os.path.join(self.configurator.backup_path, filename)
         if os.path.exists(path):
             raise IOError('Backup file already exists: ' + filename)
         if not self.configurator.dry_run:
             cwd = os.getcwd()
             try:
-                os.chdir(os.path.dirname(profile.path))
+                dirname, basename = os.path.split(profile.path)
+                os.chdir(dirname)
                 with tarfile.open(path, 'w:bz2') as tar:
-                    tar.add(profile.name)
+                    tar.add(basename)
             finally:
                 os.chdir(cwd)
         self.backups = None  # Reset stored backup list
@@ -96,6 +98,7 @@ class BackupManager(object):
            'Delete backup \'{0}\'?'.format(backup.path)):
             if not self.configurator.dry_run:
                 os.remove(backup.path)
+            self.backups = None  # Reset stored backup list
 
     def list(self, profile=None):
         backups = self.backups
@@ -113,18 +116,20 @@ class BackupManager(object):
         return backups
 
     def restore(self, profile, backup):
-        target_path = os.path.dirname(profile.path)
-        if self.input_helper.confirm(
-           'Overwrite profile \'{0}\'?'.format(profile.path)):
+        if os.path.isdir(profile.path) and \
+           self.input_helper.confirm('Overwrite profile \'{0}\'?'.format(profile.path)):
             if not self.configurator.dry_run:
-                cwd = os.getcwd()
-                try:
-                    os.chdir(target_path)
-                    shutil.rmtree(profile.name)
-                    with tarfile.open(backup.path, 'r:bz2') as tar:
-                        tar.extractall()
-                finally:
-                    os.chdir(cwd)
+                shutil.rmtree(profile.path)
+
+        if not self.configurator.dry_run:
+            cwd = os.getcwd()
+            try:
+                dirname, basename = os.path.split(profile.path)
+                os.chdir(dirname)
+                with tarfile.open(backup.path, 'r:bz2') as tar:
+                    tar.extractall()
+            finally:
+                os.chdir(cwd)
 
     def select(self, profile):
         backups = self.list(profile)
