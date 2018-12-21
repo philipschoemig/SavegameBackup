@@ -1,0 +1,10 @@
+include README.md requirements.txt
+recursive-include config *
+recursive-include docs *
+recursive-include scripts *
+recursive-include tests *
+recursive-exclude docs *.pyc
+recursive-exclude docs *.pyo
+recursive-exclude tests *.pyc
+recursive-exclude tests *.pyo
+
