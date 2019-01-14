@@ -20,10 +20,14 @@ class Profile(object):
         self.backups = utils.backup.BackupManager(self.configurator, self)
 
     def get_time(self):
-        mtimes = [os.path.getmtime(os.path.join(self.path, entry))
-                  for entry in os.listdir(self.path)]
+        mtimes = []
+        for entry in os.listdir(self.path):
+            if entry != "remotecache.vdf":
+                filename = os.path.join(self.path, entry)
+                mtimes.append(os.path.getmtime(filename))
         mtimes.sort(reverse=True)
-        return datetime.fromtimestamp(mtimes[0])
+        mtime = mtimes[0]
+        return datetime.fromtimestamp(mtime)
 
     def __repr__(self):
         return repr((self.name, self.path))

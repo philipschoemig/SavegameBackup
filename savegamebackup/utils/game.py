@@ -51,7 +51,7 @@ class Game(object):
 
     @classmethod
     def from_config_file(cls, configurator, config_file):
-        config = configparser.SafeConfigParser()
+        config = configparser.ConfigParser()
         config.read(config_file)
         if not config.has_section('game') or \
            not config.has_option('game', 'name'):
@@ -69,6 +69,8 @@ class GameManager(object):
         os.path.expandvars('%ProgramW6432%/**'),
     ]
     input_helper = utils.userinteraction.InputHelper()
+
+    configurator = None
 
     # Cache variables
     games = None

@@ -5,6 +5,7 @@ Created on 07.01.2016
 '''
 
 import argparse
+#import argcomplete # https://argcomplete.readthedocs.io/
 import configparser
 import logging
 import os
@@ -31,7 +32,7 @@ class Configurator(object):
         self.log_file = os.path.join(self.root_path, 'SavegameBackup.log')
         self.settings_file = os.path.join(self.root_path,
                                           'SavegameBackup.settings')
-        self.settings = configparser.SafeConfigParser()
+        self.settings = configparser.ConfigParser()
 
     def run(self):
         # Initialize command line parser

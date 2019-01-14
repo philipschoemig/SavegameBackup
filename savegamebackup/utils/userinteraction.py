@@ -83,7 +83,7 @@ class SimpleCompleter(object):
 
     def __init__(self, options):
         self.options = sorted(options)
-        return
+        self.matches = None
 
     def complete(self, text, state):
         response = None

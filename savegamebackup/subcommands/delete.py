@@ -9,6 +9,8 @@ import utils.game
 class Processor(object):
     def __init__(self, configurator):
         self.configurator = configurator
+        self.args = None
+        self.game_manager = None
 
     def run(self, args):
         print("== Delete backup ==")
