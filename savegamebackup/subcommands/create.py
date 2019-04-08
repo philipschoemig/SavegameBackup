@@ -20,7 +20,6 @@ class Processor(object):
 
         self.game_manager = utils.game.GameManager()
 
-        profiles = []
         if self.args.manual:
             profiles = self.manual_profile_selection()
         else:
@@ -33,9 +32,12 @@ class Processor(object):
             print("No profiles selected")
 
     def manual_profile_selection(self):
+        selection = []
         game = self.game_manager.select()
-        profile = game.profiles.select()
-        selection = [profile]
+        if game:
+            profile = game.profiles.select()
+            if profile:
+                selection = [profile]
         return selection
 
     def automatic_profile_selection(self):

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 '''
 SavegameBackup - Manages backups of savegame files
-Version 2.0.1
+
+Version: 2.1.0
+(See Semantic Versioning: https://semver.org/)
 '''
 import sys
 

@@ -108,13 +108,11 @@ class GameManager(object):
         games = self.list()
         game = None
         if len(games) > 0:
-            index = self.input_helper.select(
-                "Please select the game",
-                [game.name for game in games])
-            game = games[index]
+            game_names = {game.name: game for game in games}
+            name = self.input_helper.input('Please enter the game', game_names.keys())
+            game = game_names[name]
         else:
             print("No game found")
-            # TODO exception
         return game
 
     def _lookup_savegame_path(self, name, pathname):
