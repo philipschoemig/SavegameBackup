@@ -75,7 +75,7 @@ class ProfileManager(object):
                             Profile(self.configurator, self.game, entry, path))
 
                 if include_backups:
-                    backup_manager = utils.backup.BackupManager()
+                    backup_manager = utils.backup.BackupManager(self.configurator, self)
                     backup_profiles = [
                         re.split(r'_' + utils.backup.TIMESTAMP_REGEXP,
                                  backup.name, 1)[0]

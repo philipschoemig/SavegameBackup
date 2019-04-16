@@ -2,7 +2,7 @@
 '''
 SavegameBackup - Manages backups of savegame files
 
-Version: 2.1.0
+Version: 2.1.1
 (See Semantic Versioning: https://semver.org/)
 '''
 import sys

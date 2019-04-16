@@ -1,6 +1,6 @@
 @echo off
 cd %~dp0\..
 call .venv\Scripts\activate
-savegamebackup\app.py
+python savegamebackup\app.py %*
 call deactivate
 pause
