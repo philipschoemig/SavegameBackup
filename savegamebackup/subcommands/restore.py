@@ -1,8 +1,9 @@
-'''
+"""
 Created on 22.01.2016
 
 @author: Philip Schoemig
-'''
+"""
+
 import utils.game
 
 

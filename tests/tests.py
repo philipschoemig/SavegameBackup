@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-'''
+"""
 Created on 14.05.2015
 
 @author: Philip Schoemig
-'''
+"""
 
 import os
 import pytest

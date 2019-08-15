@@ -1,8 +1,8 @@
-'''
+"""
 Created on 07.01.2016
 
 @author: Philip Schoemig
-'''
+"""
 
 import argparse
 #import argcomplete # https://argcomplete.readthedocs.io/

@@ -1,8 +1,9 @@
-'''
+"""
 Created on 07.01.2016
 
 @author: Philip Schoemig
-'''
+"""
+
 import configparser
 import itertools
 import os

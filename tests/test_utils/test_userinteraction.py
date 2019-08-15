@@ -1,8 +1,8 @@
-'''
+"""
 Created on 23.01.2016
 
 @author: Philip Schoemig
-'''
+"""
 
 import unittest
 from unittest.mock import call, patch

@@ -1,8 +1,9 @@
-'''
+"""
 Created on 07.01.2016
 
 @author: Philip Schoemig
-'''
+"""
+
 from datetime import datetime
 import os
 import re
